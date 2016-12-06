@@ -1,10 +1,10 @@
 # brainfuck_haskell
 My brainfuck interpreter written in haskell.
 ## Compiling
-Compile main and run like so:
-  **On linux:**
+Compile main and run like so:  
+  **On linux:**  
     - ```markdown
-         # ./main \[8,16\] \[-O2\] brainfuck_prog.
+         # ./main \[8,16\] \[-O2\] brainfuck_prog.  
       ```
-    - where 8 and 16 is cell wide in bits and -O2 is lvl of optimization.
+    - where 8 and 16 is cell wide in bits and -O2 is lvl of optimization.  
     - Default configuration(when no args supplied) is 8 -O2.
