@@ -1,19 +1,27 @@
-{-# LANGUAGE NoImplicitPrelude #-}
-
 module Main (main) where
 
-import Protolude
-import Data.List (delete)
+import Foundation
+import Foundation.IO
+import Foundation.String
+import Foundation.VFS.FilePath
 import BrainRun
 
-readName = readFile . headDef ""
-
+parseArgs :: [String] -> IO (Maybe (Bool, [String]))
 parseArgs args
-  | "8" `elem` args && "-O2" `elem` args  = putStrLn "Using 8 bit cells and optimizations" >> (readName . delete "-O2" . delete "8" $ args) >>= runOpt8 . toS
-  | "16" `elem` args && "-O2" `elem` args = putStrLn "Using 16 bit cells and optimizations" >> (readName . delete "-O2" . delete "16" $ args) >>= runOpt16 . toS
-  | "8" `elem` args                       = putStrLn "Using 8 bit cells without optimizations" >> (readName . delete "8" $ args) >>= run8 . toS
-  | "16" `elem` args                      = putStrLn "Using 16 bit cells without optimizations " >> (readName . delete "16" $ args) >>= run16 . toS
-  | length args == 1                      = putStrLn "Using default configutarion" >> readName args >>= runOpt8 . toS
-  | otherwise                             = putStrLn "Wrong args\nUsage:\n\t[8 or 16] use Word8 or Word16\n\t[-O2]     use optimizations(can be omitted)\n\t[name]    of the prog to run\nDefault configuration is 8 bit cells with optimizations"
+  | length args == 2 &&  "-O" `elem` args  =
+      (putStrLn "Using 8 bit cells and optimizations") >>
+      (return $ Just (True, filter (/= "-O") . filter (/= "8") $ args))
+  | length args == 1                      =
+      (putStrLn "Using default configutarion") >>
+      (return $ Just (False, args))
+  | otherwise                             =
+      (putStrLn $ "Wrong args\nUsage:\n\t[-O]     use optimizations(can be" <>
+      "omitted)\n\t[name]    of the prog to run\n ") >>
+      (return Nothing)
 
-main = getArgs >>= parseArgs
+run :: (Bool, [String]) -> IO ()
+run (o, name) = (readFile . maybe "" (fromString . toList . head) $ nonEmpty name) >>=
+                (let run' = if o then runOpt8 else run8 in run' . fromBytesUnsafe)
+
+main :: IO ()
+main = getArgs >>= parseArgs >>= maybe mempty run

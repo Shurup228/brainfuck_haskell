@@ -1,5 +1,3 @@
-{-# LANGUAGE NoImplicitPrelude #-}
-
 module BrainData (
   BrainfuckCommand(..),
   Code,
@@ -7,7 +5,7 @@ module BrainData (
   emptyTape8,
   emptyTape16) where
 
-import Protolude
+import Foundation
 
 type Code = [BrainfuckCommand]
 
@@ -29,8 +27,8 @@ data Tape a = Tape {left, right :: [a], value :: !a} deriving (Show)
 
 emptyTape8 :: Tape Word8
 emptyTape8 = Tape{left = zeros, value = 0, right = zeros}
-  where zeros = repeat 0
+  where zeros = 0 : zeros
 
 emptyTape16 :: Tape Word16
 emptyTape16 = Tape{left = zeros, value = 0, right = zeros}
-  where zeros = repeat 0
+  where zeros = 0 : zeros
